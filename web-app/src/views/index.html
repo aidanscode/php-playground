@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en" class="h-100">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <title>PHP Playground</title>
+  </head>
+  <body class="w-100 h-100 bg-dark">
+
+    <div class="container mt-5 h-100">
+      <h1 class="text-info">PHP Playground</h1>
+
+      <textarea id="code" class="form-control h-50" autofocus></textarea>
+      <button id="run" type="button" class="btn btn-info mt-3">Run</button>
+
+      <div id="output" class="mt-5 d-none">
+        <h6 class="text-success" id="success">Output:</h6>
+        <h6 class="text-danger" id="error">Error Message:</h6>
+
+        <textarea id="output-textarea" class="form-control" rows="6" readonly="readonly"></textarea>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script>
+      document.getElementById('run').addEventListener('click', () => {
+        const code = document.getElementById('code').value;
+        if (!code) {
+          alert('Please enter valid PHP before submitting!');
+          return;
+        }
+
+        fetch("/execute", {
+          method: "post",
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ php: code })
+        }).then(response => response.json())
+        .then(json => {
+          const resultBox = document.getElementById('output');
+          const successLabel = document.getElementById('success');
+          const errorLabel = document.getElementById('error');
+          const outputTextarea = document.getElementById('output-textarea');
+
+          if (json.error) {
+            successLabel.classList.add('d-none');
+            errorLabel.classList.remove('d-none');
+            outputTextarea.value = json.error;
+          } else {
+            successLabel.classList.remove('d-none');
+            errorLabel.classList.add('d-none');
+            outputTextarea.value = json.output;
+          }
+
+          resultBox.classList.remove('d-none')
+        });
+      });
+    </script>
+  </body>
+</html>
+
