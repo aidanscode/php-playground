@@ -8,7 +8,9 @@ The web server runs using Node/Express.js inside of a docker container. This web
 
 ## TODO:
 
-* Implement a safeguard against infinitely running code. Will have some max runtime and kill the PHP containers that run longer than the max allowed.
+* De-hard-codify the docker code
+
+* Unit tests?
 
 ## Demo
 
