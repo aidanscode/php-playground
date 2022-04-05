@@ -1,5 +1,7 @@
+require('dotenv').config();
+console.log(process.env);
 const { v4: uuidv4 } = require('uuid');
-const docker = require('./docker');
+const docker = require('./util/docker');
 const path = require('path');
 const express = require('express');
 const app = express();
