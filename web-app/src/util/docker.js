@@ -3,6 +3,13 @@ const { v4: uuidv4 } = require('uuid');
 const fileio = require('./fileio');
 
 const docker = {
+  startTimeLimitedContainer: (image, volume, workdir, entrypoint, callback) => {
+    const maxRuntime = process.env.PHP_MAX_RUNTIME;
+    const runtimeString = 'timeout ' + maxRuntime;
+    const dockerCmd = 'docker run --rm -v ' + volume + ' -w ' + workdir + ' ' + image + ' ' + runtimeString + ' ' + entrypoint;
+
+    child_process.exec(dockerCmd, callback);
+  },
   executePhp: (phpCode, callback) => {
     const filePath = process.env.VOLUME_PATH;
     const fileName = uuidv4() + '.php';
@@ -13,18 +20,23 @@ const docker = {
         return;
       }
 
-      const maxRuntime = process.env.PHP_MAX_RUNTIME;
-      child_process.exec('docker run --rm -v ' + filePath + fileName + ':/usr/local/src/' + fileName + ' -w /usr/local/src php:7.4-cli timeout ' + maxRuntime + ' php ' + fileName, (err, stdout, stderr) => {
-        if (err) {
-          if (err.code && err.code === 124)
-            callback('Maximum execution runtime exceeded!');
-          else
-            callback(stdout);
-        } else {
-          callback(null, stdout);
+      docker.startTimeLimitedContainer(
+        'php:7.4-cli', //image
+        filePath + fileName + ':/usr/local/src/' + fileName, //volume
+        '/usr/local/src/', //workdir
+        'php ' + fileName, //entrypoint
+        (err, stdout, _) => { //callback
+          if (err) {
+            if (err.code && err.code === 124)
+              callback('Maximum execution runtime exceeded!');
+            else
+              callback(stdout);
+          } else {
+            callback(null, stdout);
+          }
+          done();
         }
-        done();
-      });
+      );
     });
   }
 };

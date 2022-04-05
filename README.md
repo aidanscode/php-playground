@@ -8,8 +8,6 @@ The web server runs using Node/Express.js inside of a docker container. This web
 
 ## TODO:
 
-* De-hard-codify the docker code
-
 * Unit tests?
 
 ## Demo
