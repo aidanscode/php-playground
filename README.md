@@ -8,6 +8,8 @@ The web server runs using Node/Express.js inside of a docker container. This web
 
 ## TODO:
 
+* Remove all hard coding of the volume path (still hardcoded in docker-compose.yml, I believe I saw a way of configuring this thru a .env somewhere before)
+
 * Unit tests?
 
 ## Demo
